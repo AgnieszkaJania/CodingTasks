@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 
 namespace CodingTasks
@@ -8,26 +9,9 @@ namespace CodingTasks
     {
         static void Main(string[] args)
         {
-            //Console.WriteLine(FindAllSubstring("Agnieszka"));
-            //FindAllSubstringArrays("Agnieszka");
-            //Console.WriteLine(ReverseString("aineingarp"));
-            //TransposeArray(new int[,] { { 1, 1, 1 }, { 0, 1, 0 }, { 2, 3, 0 }, { 6, 7, 9 } });
-            //Console.WriteLine();
-            //TransposeArray(new int[,] { { 2, 1, 1, 5 }, { 0, 1, 0, 3 }, { 2, 3, 0, 6 } });
-            //Console.WriteLine();
-            //TransposeArray(new int[,] { { 1, 3 }, { 5, 6 }, {0, 0} });
-            //Console.WriteLine();
-            //TransposeArray(new int[,] { { 7, 9, 1, 6, 4, 5 }, { 0, 1, 0, 0, 9, 8 }, { 2, 3, 0, 8, 7, 1 } });
-            //Console.WriteLine();
-            //TransposeArray(new int[,] { { 7, 8, 1, 5, 5, 5, 1} });
-            //Console.WriteLine();
-            //TransposeArray(new int[,] { { 2 },{ 5 },{ 3 },{ 0 } });
-            //Console.WriteLine();
-            //TransposeArray(new int[,] { { 2 }});
             //GuessPasswordGame.Play();
             //Clicker.Play();
             FizzBuzz();
-
         }
         public static IList<string> FindAllSubstring(string txt)
         {
@@ -195,6 +179,57 @@ namespace CodingTasks
                 return 1;
             }
             return FibonacciSequence(n - 1) + FibonacciSequence(n - 2);
+        }
+        public static IDictionary<char, int> CountCharactersInText(string text)
+        {
+            IDictionary<char, int> dict = new Dictionary<char, int>();
+            foreach(char character in text)
+            {
+                if(character == ' ')
+                {
+                    continue;
+                }
+                if (!dict.ContainsKey(character))
+                {
+                    dict.Add(character, 1);
+                    continue;
+                }
+                else
+                {
+                    dict[character]++;
+                }  
+            }
+            foreach(var kvp in dict)
+            {
+                Console.WriteLine($"Key: {kvp.Key} Value: {kvp.Value}");
+            }
+            return dict;
+        }
+    }
+    public class CollectionHelper
+    {
+        public static bool AreDictionariesEqual<T, U>(IDictionary<T, U> firstDict, IDictionary<T, U> secondDict)
+        {
+            if (firstDict.Count != secondDict.Count)
+            {
+                return false;
+            }
+            foreach (var kvp in firstDict)
+            {
+                if (!secondDict.ContainsKey(kvp.Key))
+                {
+                    return false;
+                }
+                if (!secondDict[kvp.Key].Equals(kvp.Value))
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+        public static bool AreListsEqual<T>(IList<T> firstList, IList<T> secondList)
+        {
+            return firstList.All(e => secondList.Contains(e)) && firstList.Count == secondList.Count;
         }
     }
 }

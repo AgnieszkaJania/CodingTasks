@@ -1,6 +1,7 @@
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using CodingTasks;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace TasksTests
 {
@@ -72,8 +73,18 @@ namespace TasksTests
     [TestClass]
     public class UnitTestsString
     {
-        private static readonly IList<string> expectedSubstrings = new List<string>() { "zakaz", "zaka", "zak", "za", "z", "akaz", "aka", "ak", "a", "kaz", "ka", "k", "az", "a", "z" };
- 
+        private static IEnumerable<object[]> GiveExpectedSubstrings() => new[] {
+            new[] { new Dictionary<string, IList<string>>(){ {"zakaz",
+                new List<string>(){ "zakaz", "zaka", "zak", "za", "z", "akaz", "aka", "ak", "a", "kaz", "ka", "k", "az", "a", "z"} } } }
+        };
+        private static IEnumerable<object> ExpectedCountCharResults() => new[] {
+            new[] { new Dictionary<string, IDictionary<char, int>>(){ { "ala ma kota i psa i inne zwierzaki oraz x-mana",
+                    new Dictionary<char, int>() { { 'a', 9 }, { 'l', 1 }, { 'm', 2 }, { 'k', 2 }, { 'o', 2 }, { 't', 1 }, { 'i', 5 },
+                    { 'p', 1 }, { 's', 1 }, { 'n', 3 }, { 'e', 2 }, { 'z', 3 }, { 'w', 1 }, { 'r', 2 }, { 'x', 1 }, { '-', 1 } } } } },
+            new[] { new Dictionary<string, IDictionary<char, int>>(){ {"aga i gitara", new Dictionary<char, int>() { { 'a', 4 }, { 'g', 2 },
+                    { 'i', 2}, { 't', 1}, { 'r', 1} } } } }
+        };
+
         [TestMethod]
         [DataRow("pragnienia", "aineingarp")]
         [DataRow("Agnieszka", "akzseingA")]
@@ -82,21 +93,17 @@ namespace TasksTests
         {
             string res = Program.ReverseString(str);
             Assert.AreEqual(expectedRes, res);
-            Assert.AreEqual(expectedRes, res);
-            Assert.AreEqual(expectedRes, res);
+        }
 
-        }
         [TestMethod]
-        [DataRow("zakaz")]
-        public void Check_String_All_Possible_Substrings(string str)
+        [DynamicData(nameof(GiveExpectedSubstrings), DynamicDataSourceType.Method)]
+        public void Check_String_All_Possible_Substrings(IDictionary<string, IList<string>> expectedSubstrings)
         {
-            IList<string> res = Program.FindAllSubstring(str);
-            foreach(string subStr in res)
-            {
-                Assert.IsTrue(expectedSubstrings.Contains(subStr));
-            }
-            Assert.AreEqual(expectedSubstrings.Count, res.Count);
+            string word = expectedSubstrings.Keys.First();
+            IList<string> res = Program.FindAllSubstring(word);
+            Assert.IsTrue(CollectionHelper.AreListsEqual(res, expectedSubstrings[word]));
         }
+
         [TestMethod]
         [DataRow("zakaz")]
         [DataRow("civic")]
@@ -107,6 +114,7 @@ namespace TasksTests
             bool res = Program.IsPalindrome(str);
             Assert.IsTrue(res);
         }
+
         [TestMethod]
         [DataRow("agnieszka")]
         [DataRow("pies")]
@@ -117,6 +125,7 @@ namespace TasksTests
             bool res = Program.IsPalindrome(str);
             Assert.IsFalse(res);
         }
+
         [TestMethod]
         [DataRow(")aga<>lubi(psy)")]
         [DataRow("aga lubi <(psy)>]")]
@@ -131,6 +140,7 @@ namespace TasksTests
             bool result = Program.CheckIfBracketsCorrectlyPlaced(inputStr);
             Assert.IsFalse(result);
         }
+
         [TestMethod]
         [DataRow("(<aga>)")]
         [DataRow("({[]})")]
@@ -145,6 +155,15 @@ namespace TasksTests
         {
             bool result = Program.CheckIfBracketsCorrectlyPlaced(inputStr);
             Assert.IsTrue(result);
+        }
+        
+        [TestMethod]
+        [DynamicData(nameof(ExpectedCountCharResults), DynamicDataSourceType.Method)]
+        public void Check_Count_Characters_In_Text(IDictionary<string, IDictionary<char, int>> expectedCount)
+        {
+            string word = expectedCount.Keys.First();
+            IDictionary<char, int> result = Program.CountCharactersInText(word);
+            Assert.IsTrue(CollectionHelper.AreDictionariesEqual(result, expectedCount[word]));
         }
     }
 
@@ -163,5 +182,85 @@ namespace TasksTests
             Assert.AreEqual(expectedAngle, angle);
         }
     }
+    [TestClass]
+    public class UnitTestsArray
+    {
+        private static IEnumerable<object[]> GiveTestArrays() => new[] {
+                new[] { new [,] { { 1, 1, 1 }, { 0, 1, 0 }, { 2, 3, 0 }, { 6, 7, 9 } }, new [,] { { 1, 0, 2, 6 }, { 1, 1, 3, 7 }, { 1, 0, 0, 9 } } },
+                new[] { new [,] { { 2, 1, 1, 5 }, { 0, 1, 0, 3 }, { 2, 3, 0, 6 } }, new [,] { { 2, 0, 2 }, { 1, 1, 3 }, {1, 0, 0}, {5, 3, 6 } } },
+                new[] { new [,] { { 1, 3 }, { 5, 6 }, { 0, 0 } }, new [,] { { 1, 5, 0 }, {3, 6, 0 } } },
+                new[] { new [,] { { 7, 9, 1, 6, 4, 5 }, { 0, 1, 0, 0, 9, 8 }, { 2, 3, 0, 8, 7, 1 } }, new[,] { { 7, 0, 2 }, { 9, 1, 3 }, { 1, 0, 0 }, { 6, 0, 8 }, { 4, 9, 7 }, { 5, 8, 1 } } },
+                new[] { new [,] { { 7, 8, 1, 5, 5, 5, 1 } }, new[,] { { 7 }, { 8 }, { 1 }, { 5 }, { 5 }, { 5 }, { 1 } } },
+                new[] { new [,] { { 2 }, { 5 }, { 3 }, { 0 } }, new[,] { {2, 5, 3, 0 } } },
+                new[] { new [,] { { 2 } }, new [,] { { 2 } } }
+        };
 
+        [TestMethod]
+        [DynamicData(nameof(GiveTestArrays), DynamicDataSourceType.Method)]
+        public void Check_Transpose_Array(int[,] arr, int[,] expectedTransposedArr)
+        {
+            int[,] result = Program.TransposeArray(arr);
+            CollectionAssert.AreEqual(expectedTransposedArr, result);
+        }
+    }
+    [TestClass]
+    public class UnitTestsCollectionHelper
+    {
+        private static IEnumerable<IDictionary<char, int>[]> GiveEqualDictionaries() => new[]
+        {
+            new[] { new Dictionary<char, int>() { { 'a', 2 }, {'w', 5 }, {'<', 3 }, {'c', 7}, {'e', 3 } }, new Dictionary<char, int>() { { 'a', 2 }, {'w', 5 }, {'<', 3 }, {'c', 7}, {'e', 3 } } },
+            new[] { new Dictionary<char, int>() { { 'o', 4 }, {'x', 5 }, {'?', 1 }, {'t', 2}, {'{', 1 } }, new Dictionary<char, int>() { { 't', 2 }, {'{', 1 }, {'o', 4 }, {'?', 1}, {'x', 5 } } }
+        };
+        private static IEnumerable<IDictionary<char, int>[]> GiveNotEqualDictionaries() => new[]
+        {
+            new[] { new Dictionary<char, int>() { { 'a', 2 }, {'b', 5 }, {'q', 3 }, {'+', 1} }, new Dictionary<char, int>() { {'+', 1 }, {'q', 4 }, {'a', 2 }, {'b', 5 } } },
+            new[] { new Dictionary<char, int>() { { 'o', 4 }, {'r', 5 }, {'!', 1 }, {'@', 2}, {'g', 1 } }, new Dictionary<char, int>() { {'r', 5 }, {'o', 4 }, {'@', 2 },  {'!', 1 } } },
+            new[] { new Dictionary<char, int>() { { 'o', 4 }, {'r', 5 }, {'!', 1 }, {'@', 2}, {'g', 1 } }, new Dictionary<char, int>() { {'g', 1 }, {'@', 2 }, {'o', 4 }, { '!', 1 }, { 'r', 5 }, {'#', 1 } } },
+        };
+        private static IEnumerable<IList<string>[]> GiveEqualLists() => new[]
+        {
+            new[] {new List<string>() { "okno", "sofa", "rower", "pralka", "piec", "meble" }, new List<string>() { "sofa", "pralka", "meble", "rower", "okno", "piec"} },
+            new[] {new List<string>() { "drzewo", "kwiat", "owoc"}, new List<string>() { "drzewo", "kwiat", "owoc"} }
+        };
+        private static IEnumerable<IList<string>[]> GiveNotEqualLists() => new[]
+        {
+            new[] {new List<string>() { "okno", "sofa", "rower", "pralka", "piec", "meble" }, new List<string>() { "meble", "sofa", "pralka", "kominek", "rower", "okno", "piec" } },
+            new[] {new List<string>() { "sofa", "piec", "pralka", "meble", "rower", "okno" }, new List<string>() { "rower", "pralka", "piec", "meble" } },
+            new[] {new List<string>() { "drzewo", "kwiat", "owoc"}, new List<string>() { "drzewo", "kwiat"} },
+            new[] {new List<string>() { "drzewo", "kwiat", "owoc"}, new List<string>() { "drzewo", "kwiat", "owoc", "warzywo", "krzew"} }
+        };
+
+        [TestMethod]
+        [DynamicData(nameof(GiveEqualDictionaries), DynamicDataSourceType.Method)]
+        public void Check_AreDictionariesEqual_Are_Equal(IDictionary<char, int> firstDict, IDictionary<char, int> secondDict)
+        {
+            bool result = CollectionHelper.AreDictionariesEqual(firstDict, secondDict);
+            Assert.IsTrue(result);
+        }
+
+        [TestMethod]
+        [DynamicData(nameof(GiveNotEqualDictionaries), DynamicDataSourceType.Method)]
+        public void Check_AreDictionariesEqual_Are_Not_Equal(IDictionary<char, int> firstDict, IDictionary<char, int> secondDict)
+        {
+            bool result = CollectionHelper.AreDictionariesEqual(firstDict, secondDict);
+            Assert.IsFalse(result);
+        }
+
+        [TestMethod]
+        [DynamicData(nameof(GiveEqualLists), DynamicDataSourceType.Method)]
+        public void Check_AreListsEqual_Are_Equal(IList<string> firstList, IList<string> secondList)
+        {
+            bool result = CollectionHelper.AreListsEqual(firstList, secondList);
+            Assert.IsTrue(result);
+        }
+
+        [TestMethod]
+        [DynamicData(nameof(GiveNotEqualLists), DynamicDataSourceType.Method)]
+        public void Check_AreListsEqual_Are_Not_Equal(IList<string> firstList, IList<string> secondList)
+        {
+            bool result = CollectionHelper.AreListsEqual(firstList, secondList);
+            Assert.IsFalse(result);
+        }
+
+    }
 }
