@@ -199,10 +199,7 @@ namespace CodingTasks
                     dict[character]++;
                 }  
             }
-            foreach(var kvp in dict)
-            {
-                Console.WriteLine($"Key: {kvp.Key} Value: {kvp.Value}");
-            }
+            CollectionHelper.DisplayDictionary(dict);
             return dict;
         }
     }
@@ -230,6 +227,13 @@ namespace CodingTasks
         public static bool AreListsEqual<T>(IList<T> firstList, IList<T> secondList)
         {
             return firstList.All(e => secondList.Contains(e)) && firstList.Count == secondList.Count;
+        }
+        public static void DisplayDictionary<T, U>(IDictionary<T, U> dict)
+        {
+            foreach (var kvp in dict)
+            {
+                Console.WriteLine($"Key: {kvp.Key} Value: {kvp.Value}");
+            }
         }
     }
 }
