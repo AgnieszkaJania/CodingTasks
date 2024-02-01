@@ -22,14 +22,16 @@ namespace CodingTasks
         }
         public static IList<string> ReadAllLinesFromFile(string filePath)
         {
-            StreamReader sr = new StreamReader(filePath, Encoding.UTF8);
             IList<string> textLines = new List<string>();
-            while (!sr.EndOfStream)
+            using (StreamReader sr = new StreamReader(filePath, Encoding.UTF8))
             {
-                textLines.Add(sr.ReadLine());
+                while (!sr.EndOfStream)
+                {
+                    textLines.Add(sr.ReadLine());
+                }
             }
-            sr.Close();
             return textLines;
+
         }
         public static void WriteLinesToFile(IList<string> lines, string filePath)
         {

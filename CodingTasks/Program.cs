@@ -11,7 +11,9 @@ namespace CodingTasks
         {
             //GuessPasswordGame.Play();
             //Clicker.Play();
-            FizzBuzz();
+            //FizzBuzz();
+            FileProcessing.ProcesFileData(@"C:\Projekty_Visual_Studio\SourceFiles\Amounts.txt", 
+                @"C:\Projekty_Visual_Studio\SourceFiles\AmountsSum.txt", (a, b) => a + b);
         }
         public static IList<string> FindAllSubstring(string txt)
         {
